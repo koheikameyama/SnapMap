@@ -194,85 +194,10 @@ class _MapScreenState extends State<MapScreen> {
 
   // カテゴリフィルタダイアログを表示
   void _showCategoryFilter() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('カテゴリフィルタ'),
-        content: StatefulBuilder(
-          builder: (context, setDialogState) {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 全て選択/解除
-                  CheckboxListTile(
-                    title: const Text(
-                      'すべて',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    value: _selectedCategories.isEmpty,
-                    onChanged: (value) {
-                      setDialogState(() {
-                        if (value == true) {
-                          _selectedCategories.clear();
-                        } else {
-                          _selectedCategories = PostCategory.values.toSet();
-                        }
-                      });
-                    },
-                  ),
-                  const Divider(),
-                  // 各カテゴリ
-                  ...PostCategory.values.map((category) {
-                    return CheckboxListTile(
-                      title: Row(
-                        children: [
-                          Icon(category.icon, size: 20, color: category.markerColor),
-                          const SizedBox(width: 8),
-                          Text(category.displayName),
-                        ],
-                      ),
-                      value: _selectedCategories.isEmpty || _selectedCategories.contains(category),
-                      onChanged: (value) {
-                        setDialogState(() {
-                          if (value == true) {
-                            _selectedCategories.add(category);
-                            // 全て選択された場合はクリア（全て表示状態にする）
-                            if (_selectedCategories.length == PostCategory.values.length) {
-                              _selectedCategories.clear();
-                            }
-                          } else {
-                            // 一度全て選択状態から個別解除する場合
-                            if (_selectedCategories.isEmpty) {
-                              _selectedCategories = PostCategory.values.toSet();
-                            }
-                            _selectedCategories.remove(category);
-                          }
-                        });
-                      },
-                    );
-                  }),
-                ],
-              ),
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
-          ),
-          FilledButton(
-            onPressed: () {
-              setState(() {
-                // フィルタを適用
-              });
-              _updateFilteredPosts();
-              Navigator.of(context).pop();
-            },
-            child: const Text('適用'),
-          ),
-        ],
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('カテゴリフィルタ機能は開発中です'),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -440,14 +365,14 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          // カテゴリフィルターボタン
+          // カテゴリフィルターボタン（開発中）
           FloatingActionButton(
             heroTag: 'filter',
             onPressed: _showCategoryFilter,
-            backgroundColor: _selectedCategories.isEmpty ? Colors.white : const Color(0xFF64B5F6),
-            child: Icon(
+            backgroundColor: Colors.white,
+            child: const Icon(
               Icons.filter_list_rounded,
-              color: _selectedCategories.isEmpty ? const Color(0xFF64B5F6) : Colors.white,
+              color: Color(0xFF64B5F6),
             ),
           ),
           const SizedBox(height: 16),
