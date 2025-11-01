@@ -12,7 +12,9 @@ import '../models/place_search_result.dart';
 import 'profile_edit_screen.dart';
 
 class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({super.key});
+  final File? initialImage;
+
+  const CreatePostScreen({super.key, this.initialImage});
 
   @override
   State<CreatePostScreen> createState() => _CreatePostScreenState();
@@ -37,7 +39,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   void initState() {
     super.initState();
-    _getLocation();
+    _selectedImage = widget.initialImage;
+    // 位置情報は自動取得せず、ユーザーが明示的に選択する必要がある
   }
 
   @override
@@ -319,9 +322,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             const SizedBox(height: 24),
 
             // カテゴリ選択
-            const Text(
-              'カテゴリ',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                const Text(
+                  'カテゴリ',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '*',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red[600]),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -355,9 +367,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '場所',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    const Text(
+                      '場所',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '*',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red[600]),
+                    ),
+                  ],
                 ),
                 TextButton.icon(
                   onPressed: _useCurrentLocation,
@@ -370,9 +391,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             TextField(
               controller: _locationSearchController,
               decoration: InputDecoration(
-                labelText: '場所を検索（任意）',
+                labelText: '場所を検索',
                 border: const OutlineInputBorder(),
-                hintText: 'お店の名前や場所を検索',
+                hintText: 'お店の名前や場所を検索（現在地も使用可）',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _locationSearchController.text.isNotEmpty
                     ? IconButton(
@@ -446,7 +467,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
             // 投稿ボタン
             FilledButton(
-              onPressed: _isLoading ? null : _createPost,
+              onPressed: (_isLoading ||
+                         _selectedImage == null ||
+                         _latitude == null ||
+                         _longitude == null)
+                  ? null
+                  : _createPost,
               child: _isLoading
                   ? const SizedBox(
                       height: 20,

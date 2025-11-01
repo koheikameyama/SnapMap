@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/post.dart';
 import '../models/post_category.dart';
@@ -104,13 +106,53 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  // 投稿作成画面へ移動
-  void _navigateToCreatePost() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CreatePostScreen(),
+  // 投稿作成画面へ移動（写真選択後）
+  Future<void> _navigateToCreatePost() async {
+    final ImagePicker imagePicker = ImagePicker();
+
+    // 写真選択ダイアログを表示
+    final ImageSource? source = await showDialog<ImageSource>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('写真を選択'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('カメラで撮影'),
+              onTap: () => Navigator.of(context).pop(ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('ギャラリーから選択'),
+              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+            ),
+          ],
+        ),
       ),
     );
+
+    if (source == null) return;
+
+    // 写真を選択
+    final XFile? image = await imagePicker.pickImage(
+      source: source,
+      maxWidth: 1920,
+      maxHeight: 1920,
+      imageQuality: 85,
+    );
+
+    if (image != null && mounted) {
+      // CreatePostScreenに遷移
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => CreatePostScreen(
+            initialImage: File(image.path),
+          ),
+        ),
+      );
+    }
   }
 
   // 場所を検索
@@ -413,7 +455,7 @@ class _MapScreenState extends State<MapScreen> {
           FloatingActionButton(
             heroTag: 'create',
             onPressed: _navigateToCreatePost,
-            child: const Icon(Icons.add_photo_alternate_rounded),
+            child: const Icon(Icons.camera_alt),
           ),
         ],
       ),
