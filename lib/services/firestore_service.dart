@@ -17,15 +17,19 @@ class FirestoreService {
     }
   }
 
-  // 指定範囲内の投稿を取得（地図表示用）
+  // 指定範囲内の投稿を取得（地図表示用、30日以内のみ）
   Stream<List<Post>> getPostsInBounds({
     required double minLat,
     required double maxLat,
     required double minLng,
     required double maxLng,
   }) {
+    // 30日前の日時を計算
+    final DateTime thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+
     return _firestore
         .collection('posts')
+        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(thirtyDaysAgo))
         .where('latitude', isGreaterThanOrEqualTo: minLat)
         .where('latitude', isLessThanOrEqualTo: maxLat)
         .snapshots()
@@ -37,10 +41,14 @@ class FirestoreService {
     });
   }
 
-  // すべての投稿を取得
+  // すべての投稿を取得（30日以内のみ）
   Stream<List<Post>> getAllPosts() {
+    // 30日前の日時を計算
+    final DateTime thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+
     return _firestore
         .collection('posts')
+        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(thirtyDaysAgo))
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -48,10 +56,14 @@ class FirestoreService {
     });
   }
 
-  // 特定のカテゴリの投稿を取得
+  // 特定のカテゴリの投稿を取得（30日以内のみ）
   Stream<List<Post>> getPostsByCategory(String category) {
+    // 30日前の日時を計算
+    final DateTime thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+
     return _firestore
         .collection('posts')
+        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(thirtyDaysAgo))
         .where('category', isEqualTo: category)
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -60,10 +72,14 @@ class FirestoreService {
     });
   }
 
-  // 特定のユーザーの投稿を取得
+  // 特定のユーザーの投稿を取得（30日以内のみ）
   Stream<List<Post>> getPostsByUser(String userId) {
+    // 30日前の日時を計算
+    final DateTime thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+
     return _firestore
         .collection('posts')
+        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(thirtyDaysAgo))
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()

@@ -515,6 +515,29 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             const SizedBox(height: 24),
 
+            // 表示期限の説明
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '投稿は30日間表示されます',
+                      style: TextStyle(color: Colors.blue[900], fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
             // 投稿ボタン
             FilledButton(
               onPressed: (_isLoading ||
