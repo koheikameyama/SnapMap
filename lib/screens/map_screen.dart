@@ -4,11 +4,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../models/post.dart';
 import '../models/post_category.dart';
 import '../models/place_search_result.dart';
 import '../services/firestore_service.dart';
 import '../services/location_service.dart';
+import '../services/ad_service.dart';
 import '../providers/auth_provider.dart';
 import 'post_detail_screen.dart';
 import 'create_post_screen.dart';
@@ -24,6 +26,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   final LocationService _locationService = LocationService();
+  final AdService _adService = AdService();
 
   GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(35.6812, 139.7671); // 東京駅がデフォルト
@@ -37,11 +40,26 @@ class _MapScreenState extends State<MapScreen> {
 
   Post? _selectedPost; // 選択された投稿（写真プレビュー表示用）
 
+  // バナー広告
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
     _loadPosts();
+    _loadBannerAd();
+  }
+
+  // バナー広告をロード
+  void _loadBannerAd() {
+    _bannerAd = _adService.createBannerAd()
+      ..load().then((_) {
+        setState(() {
+          _isBannerAdLoaded = true;
+        });
+      });
   }
 
   // 現在位置を取得
@@ -263,8 +281,12 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
+          // 地図とその他のコンテンツ
+          Expanded(
+            child: Stack(
+              children: [
           // 地図
           GoogleMap(
             initialCameraPosition: CameraPosition(
@@ -454,29 +476,47 @@ class _MapScreenState extends State<MapScreen> {
                 ],
               ),
             ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // カテゴリフィルターボタン（開発中）
-          FloatingActionButton(
-            heroTag: 'filter',
-            onPressed: _showCategoryFilter,
-            backgroundColor: Colors.white,
-            child: const Icon(
-              Icons.filter_list_rounded,
-              color: Color(0xFF64B5F6),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          // 投稿作成ボタン
-          FloatingActionButton(
-            heroTag: 'create',
-            onPressed: _navigateToCreatePost,
-            child: const Icon(Icons.camera_alt),
-          ),
+
+          // バナー広告
+          if (_isBannerAdLoaded && _bannerAd != null)
+            Container(
+              height: _bannerAd!.size.height.toDouble(),
+              alignment: Alignment.center,
+              child: AdWidget(ad: _bannerAd!),
+            ),
         ],
+      ),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          bottom: _isBannerAdLoaded && _bannerAd != null
+              ? _bannerAd!.size.height.toDouble()
+              : 0,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            // カテゴリフィルターボタン（開発中）
+            FloatingActionButton(
+              heroTag: 'filter',
+              onPressed: _showCategoryFilter,
+              backgroundColor: Colors.white,
+              child: const Icon(
+                Icons.filter_list_rounded,
+                color: Color(0xFF64B5F6),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // 投稿作成ボタン
+            FloatingActionButton(
+              heroTag: 'create',
+              onPressed: _navigateToCreatePost,
+              child: const Icon(Icons.camera_alt),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -485,6 +525,7 @@ class _MapScreenState extends State<MapScreen> {
   void dispose() {
     _searchController.dispose();
     _mapController?.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 }

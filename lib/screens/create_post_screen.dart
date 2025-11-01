@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../models/post.dart';
 import '../models/post_category.dart';
 import '../services/firestore_service.dart';
 import '../services/storage_service.dart';
 import '../services/location_service.dart';
+import '../services/ad_service.dart';
 import '../providers/auth_provider.dart';
 import '../models/place_search_result.dart';
 import 'profile_edit_screen.dart';
@@ -26,6 +28,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final StorageService _storageService = StorageService();
   final LocationService _locationService = LocationService();
   final ImagePicker _imagePicker = ImagePicker();
+  final AdService _adService = AdService();
 
   final _captionController = TextEditingController();
   final _locationSearchController = TextEditingController();
@@ -37,11 +40,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? _locationName;
   List<PlaceSearchResult> _searchResults = [];
 
+  InterstitialAd? _interstitialAd;
+
   @override
   void initState() {
     super.initState();
     _selectedImage = widget.initialImage;
+    _loadInterstitialAd();
     // 位置情報は自動取得せず、ユーザーが明示的に選択する必要がある
+  }
+
+  // インタースティシャル広告をロード
+  Future<void> _loadInterstitialAd() async {
+    _interstitialAd = await _adService.loadInterstitialAd();
   }
 
   @override
@@ -247,6 +258,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       await _firestoreService.createPost(post);
 
       if (mounted) {
+        // インタースティシャル広告を表示
+        if (_interstitialAd != null) {
+          await _adService.showInterstitialAd(_interstitialAd);
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('投稿が完了しました')),
         );

@@ -20,6 +20,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${GOOGLE_MAPS_API_KEY}"/>
 
+        <!-- AdMob App ID（本番用） -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7558679080857597~4583737711"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
