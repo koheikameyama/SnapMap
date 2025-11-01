@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/post.dart';
 import '../models/post_category.dart';
 import '../services/firestore_service.dart';
@@ -125,12 +126,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   // 現在地を使用
-  void _useCurrentLocation() {
-    _getLocation();
+  Future<void> _useCurrentLocation() async {
     setState(() {
       _locationName = null;
       _locationSearchController.clear();
     });
+    await _getLocation();
   }
 
   // 画像選択ダイアログを表示
@@ -164,8 +165,37 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  // 投稿を作成
+  // 投稿ボタン押下時の処理（警告モーダルを表示）
   Future<void> _createPost() async {
+    // 警告モーダルを表示
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('投稿前の確認'),
+        content: const Text(
+          '人物や住居が特定されないように注意して投稿してください。\n\nプライバシーに配慮した投稿を心がけましょう。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('キャンセル'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+
+    // OKが押された場合のみ投稿処理を実行
+    if (confirmed == true) {
+      await _submitPost();
+    }
+  }
+
+  // 実際の投稿処理
+  Future<void> _submitPost() async {
     if (_selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('写真を選択してください')),
@@ -284,10 +314,23 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             // ユーザー情報
             Row(
               children: [
-                Text(
-                  '表示名: ',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.grey[300],
+                  backgroundImage: authProvider.userModel?.photoUrl != null
+                      ? CachedNetworkImageProvider(authProvider.userModel!.photoUrl!)
+                      : null,
+                  child: authProvider.userModel?.photoUrl == null
+                      ? Text(
+                          (authProvider.userModel?.displayName ?? 'U')[0].toUpperCase(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        )
+                      : null,
                 ),
+                const SizedBox(width: 8),
                 Text(
                   authProvider.userModel?.displayName ?? 'ユーザー',
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
@@ -435,7 +478,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
 
             // 選択された場所を表示
-            if (_locationName != null)
+            if (_latitude != null && _longitude != null)
               Card(
                 margin: const EdgeInsets.only(top: 8),
                 child: Padding(
@@ -450,13 +493,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          _locationName!,
+                          _locationName ?? '現在地（${_latitude!.toStringAsFixed(4)}, ${_longitude!.toStringAsFixed(4)}）',
                           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, size: 20),
-                        onPressed: _useCurrentLocation,
+                        onPressed: () {
+                          setState(() {
+                            _latitude = null;
+                            _longitude = null;
+                            _locationName = null;
+                            _locationSearchController.clear();
+                          });
+                        },
                         tooltip: '削除',
                       ),
                     ],

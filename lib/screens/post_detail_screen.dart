@@ -212,11 +212,25 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                     future: _authService.getUserData(widget.post.userId),
                     builder: (context, snapshot) {
                       final displayName = snapshot.data?.displayName ?? widget.post.userName;
+                      final photoUrl = snapshot.data?.photoUrl;
 
                       return Row(
                         children: [
                           CircleAvatar(
-                            child: Text(displayName[0]),
+                            radius: 20,
+                            backgroundColor: Colors.grey[300],
+                            backgroundImage: photoUrl != null
+                                ? CachedNetworkImageProvider(photoUrl)
+                                : null,
+                            child: photoUrl == null
+                                ? Text(
+                                    displayName[0].toUpperCase(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  )
+                                : null,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
