@@ -1,0 +1,42 @@
+{
+  // Dart & Flutter設定
+  "dart.flutterSdkPath": null, // asdfで管理する場合は自動検出
+  "dart.debugExternalPackageLibraries": true,
+  "dart.debugSdkLibraries": false,
+
+  // ホットリロード設定
+  "dart.previewHotReloadOnSaveWatcher": true,
+
+  // フォーマット設定
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [80],
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off"
+  },
+
+  // デバッグ設定
+  "debug.internalConsoleOptions": "openOnSessionStart",
+
+  // ファイル除外設定
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/.flutter-plugins": true,
+    "**/.flutter-plugins-dependencies": true,
+    "**/build": true
+  },
+
+  // 検索除外設定
+  "search.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true,
+    "**/*.g.dart": true,
+    "**/*.freezed.dart": true
+  }
+}

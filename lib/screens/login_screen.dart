@@ -57,6 +57,22 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    bool success = await authProvider.signInWithGoogle();
+
+    if (success && mounted) {
+      Navigator.of(context).pushReplacementNamed('/map');
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Googleログインに失敗しました'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -192,6 +208,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       _isLogin
                           ? 'アカウントをお持ちでない方はこちら'
                           : 'すでにアカウントをお持ちの方はこちら',
+                    ),
+                  ),
+
+                  // 区切り線
+                  const SizedBox(height: 24),
+                  Row(
+                    children: const [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text('または'),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Googleログインボタン
+                  OutlinedButton(
+                    onPressed: authProvider.isLoading ? null : _signInWithGoogle,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: Colors.grey),
+                      foregroundColor: Colors.black87,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.g_mobiledata, size: 32, color: Colors.blue),
+                        SizedBox(width: 8),
+                        Text(
+                          'Googleでログイン',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
                     ),
                   ),
                 ],

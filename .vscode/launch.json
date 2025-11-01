@@ -1,0 +1,53 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter: Debug (Android実機)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "c736b07e",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Flutter: Debug (iPhone実機)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "00008101-0000059A2E78001E",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Flutter: Debug (デバイス選択)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Flutter: Profile (Android実機)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "c736b07e",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Flutter: Profile (iPhone実機)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "00008101-0000059A2E78001E",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Flutter: Release (Android実機)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "c736b07e",
+      "flutterMode": "release"
+    },
+    {
+      "name": "Flutter: Release (iPhone実機)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "00008101-0000059A2E78001E",
+      "flutterMode": "release"
+    }
+  ]
+}
