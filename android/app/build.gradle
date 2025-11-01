@@ -48,14 +48,17 @@ android {
 
     defaultConfig {
         applicationId "com.snapmap.snap_map"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
 
         // Google Maps API Keyをマニフェストに注入
-        manifestPlaceholders = [GOOGLE_MAPS_API_KEY: googleMapsApiKey]
+        manifestPlaceholders = [
+            GOOGLE_MAPS_API_KEY: googleMapsApiKey,
+            applicationName: "android.app.Application"
+        ]
     }
 
     buildTypes {
