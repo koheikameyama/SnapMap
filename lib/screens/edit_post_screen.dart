@@ -74,12 +74,17 @@ class _EditPostScreenState extends State<EditPostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('思い出を編集'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        actions: [
+    return GestureDetector(
+      onTap: () {
+        // キーボードを閉じる
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('思い出を編集'),
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          actions: [
           if (_isLoading)
             const Center(
               child: Padding(
@@ -184,6 +189,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 }

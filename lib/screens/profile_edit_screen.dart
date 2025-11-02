@@ -146,13 +146,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final userModel = authProvider.userModel;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('プロフィール編集'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
+    return GestureDetector(
+      onTap: () {
+        // キーボードを閉じる
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('プロフィール編集'),
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+        ),
+        body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
@@ -257,6 +262,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }
