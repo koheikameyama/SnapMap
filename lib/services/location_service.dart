@@ -33,7 +33,6 @@ class LocationService {
       // 位置情報サービスが有効かチェック
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        print('位置情報サービスが無効です');
         return null;
       }
 
@@ -42,13 +41,11 @@ class LocationService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          print('位置情報の権限が拒否されました');
           return null;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        print('位置情報の権限が完全に拒否されました');
         return null;
       }
 
@@ -59,7 +56,6 @@ class LocationService {
 
       return position;
     } catch (e) {
-      print('位置情報取得エラー: $e');
       return null;
     }
   }

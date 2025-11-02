@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdService {
@@ -38,10 +39,10 @@ class AdService {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          print('バナー広告がロードされました');
+          // 広告ロード成功
         },
         onAdFailedToLoad: (ad, error) {
-          print('バナー広告のロードに失敗: $error');
+          developer.log('バナー広告のロードに失敗', error: error, name: 'AdService');
           ad.dispose();
         },
       ),
@@ -57,11 +58,10 @@ class AdService {
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
-          print('インタースティシャル広告がロードされました');
           interstitialAd = ad;
         },
         onAdFailedToLoad: (error) {
-          print('インタースティシャル広告のロードに失敗: $error');
+          developer.log('インタースティシャル広告のロードに失敗', error: error, name: 'AdService');
         },
       ),
     );
@@ -74,20 +74,18 @@ class AdService {
   // インタースティシャル広告を表示
   Future<void> showInterstitialAd(InterstitialAd? ad) async {
     if (ad == null) {
-      print('インタースティシャル広告が利用できません');
       return;
     }
 
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) {
-        print('インタースティシャル広告が表示されました');
+        // 広告表示成功
       },
       onAdDismissedFullScreenContent: (ad) {
-        print('インタースティシャル広告が閉じられました');
         ad.dispose();
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        print('インタースティシャル広告の表示に失敗: $error');
+        developer.log('インタースティシャル広告の表示に失敗', error: error, name: 'AdService');
         ad.dispose();
       },
     );

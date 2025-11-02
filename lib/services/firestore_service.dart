@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/post.dart';
 import 'storage_service.dart';
@@ -14,7 +15,7 @@ class FirestoreService {
           .add(post.toFirestore());
       return docRef.id;
     } catch (e) {
-      print('投稿作成エラー: $e');
+      developer.log('投稿作成エラー', error: e, name: 'FirestoreService');
       rethrow;
     }
   }
@@ -102,7 +103,7 @@ class FirestoreService {
         try {
           await _storageService.deleteImage(post.imageUrl);
         } catch (e) {
-          print('画像削除エラー（続行）: $e');
+          developer.log('画像削除エラー（続行）', error: e, name: 'FirestoreService');
           // 画像削除に失敗してもドキュメントは削除する
         }
 
@@ -110,7 +111,7 @@ class FirestoreService {
         await _firestore.collection('posts').doc(postId).delete();
       }
     } catch (e) {
-      print('投稿削除エラー: $e');
+      developer.log('投稿削除エラー', error: e, name: 'FirestoreService');
       rethrow;
     }
   }
@@ -124,7 +125,7 @@ class FirestoreService {
 
       await _firestore.collection('posts').doc(postId).update(updates);
     } catch (e) {
-      print('投稿更新エラー: $e');
+      developer.log('投稿更新エラー', error: e, name: 'FirestoreService');
       rethrow;
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -69,7 +70,7 @@ class ExportService {
             downloadedFiles.add(file.path);
           }
         } catch (e) {
-          print('画像のダウンロードに失敗: ${post.id} - $e');
+          developer.log('画像のダウンロードに失敗', error: e, name: 'ExportService');
         }
 
         // 進捗通知

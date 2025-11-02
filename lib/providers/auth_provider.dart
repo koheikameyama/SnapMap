@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
@@ -40,7 +41,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      print('サインアップエラー: $e');
+      developer.log('サインアップエラー', error: e, name: 'AuthProvider');
       return false;
     }
   }
@@ -58,7 +59,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      print('サインインエラー: $e');
+      developer.log('サインインエラー', error: e, name: 'AuthProvider');
       return false;
     }
   }
@@ -76,7 +77,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      print('Google サインインエラー: $e');
+      developer.log('Google サインインエラー', error: e, name: 'AuthProvider');
       return false;
     }
   }
@@ -107,7 +108,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      print('プロフィール更新エラー: $e');
+      developer.log('プロフィール更新エラー', error: e, name: 'AuthProvider');
       return false;
     }
   }

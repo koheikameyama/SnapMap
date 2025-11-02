@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 
@@ -26,7 +27,7 @@ class StorageService {
 
       return downloadUrl;
     } catch (e) {
-      print('画像アップロードエラー: $e');
+      developer.log('画像アップロードエラー', error: e, name: 'StorageService');
       rethrow;
     }
   }
@@ -52,7 +53,7 @@ class StorageService {
 
       return downloadUrl;
     } catch (e) {
-      print('プロフィール画像アップロードエラー: $e');
+      developer.log('プロフィール画像アップロードエラー', error: e, name: 'StorageService');
       rethrow;
     }
   }
@@ -63,7 +64,7 @@ class StorageService {
       Reference ref = _storage.refFromURL(imageUrl);
       await ref.delete();
     } catch (e) {
-      print('画像削除エラー: $e');
+      developer.log('画像削除エラー', error: e, name: 'StorageService');
       rethrow;
     }
   }

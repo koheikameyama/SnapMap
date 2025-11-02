@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -46,7 +47,7 @@ class AuthService {
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      print('サインアップエラー: ${e.message}');
+      developer.log('サインアップエラー', error: e.message, name: 'AuthService');
       rethrow;
     }
   }
@@ -63,7 +64,7 @@ class AuthService {
       );
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      print('サインインエラー: ${e.message}');
+      developer.log('サインインエラー', error: e.message, name: 'AuthService');
       rethrow;
     }
   }
@@ -111,10 +112,10 @@ class AuthService {
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      print('Google サインインエラー: ${e.message}');
+      developer.log('Google サインインエラー', error: e.message, name: 'AuthService');
       rethrow;
     } catch (e) {
-      print('Google サインインエラー: $e');
+      developer.log('Google サインインエラー', error: e, name: 'AuthService');
       rethrow;
     }
   }
@@ -134,7 +135,7 @@ class AuthService {
       }
       return null;
     } catch (e) {
-      print('ユーザーデータ取得エラー: $e');
+      developer.log('ユーザーデータ取得エラー', error: e, name: 'AuthService');
       return null;
     }
   }
@@ -162,7 +163,7 @@ class AuthService {
         await user.reload();
       }
     } catch (e) {
-      print('プロフィール更新エラー: $e');
+      developer.log('プロフィール更新エラー', error: e, name: 'AuthService');
       rethrow;
     }
   }
