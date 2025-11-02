@@ -176,33 +176,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  // 投稿ボタン押下時の処理（確認モーダルを表示）
+  // 投稿ボタン押下時の処理
   Future<void> _createPost() async {
-    // 確認モーダルを表示
-    final bool? confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('投稿の保存'),
-        content: const Text(
-          'この思い出を地図に保存します。\n\nあなただけが見ることができる個人用アルバムとして記録されます。',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('キャンセル'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-
-    // OKが押された場合のみ投稿処理を実行
-    if (confirmed == true) {
-      await _submitPost();
-    }
+    await _submitPost();
   }
 
   // 実際の投稿処理
