@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:developer' as developer;
+import 'dart:async';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdService {
@@ -22,7 +22,7 @@ class AdService {
     }
   }
 
-  // インタースティシャル広告のユニットID（本番用）
+  // インタースティシャル広告のユニットID
   static String get interstitialAdUnitId {
     if (Platform.isAndroid) {
       return 'ca-app-pub-7558679080857597/2031502660'; // 本番用インタースティシャル広告ID
@@ -42,7 +42,6 @@ class AdService {
           // 広告ロード成功
         },
         onAdFailedToLoad: (ad, error) {
-          developer.log('バナー広告のロードに失敗', error: error, name: 'AdService');
           ad.dispose();
         },
       ),
@@ -51,23 +50,33 @@ class AdService {
 
   // インタースティシャル広告をロード
   Future<InterstitialAd?> loadInterstitialAd() async {
-    InterstitialAd? interstitialAd;
+    final Completer<InterstitialAd?> completer = Completer<InterstitialAd?>();
 
-    await InterstitialAd.load(
+    InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
-          interstitialAd = ad;
+          if (!completer.isCompleted) {
+            completer.complete(ad);
+          }
         },
         onAdFailedToLoad: (error) {
-          developer.log('インタースティシャル広告のロードに失敗', error: error, name: 'AdService');
+          if (!completer.isCompleted) {
+            completer.complete(null);
+          }
         },
       ),
     );
 
-    // 広告がロードされるまで少し待つ
-    await Future.delayed(const Duration(seconds: 1));
+    // コールバックが呼ばれるまで待つ（最大10秒）
+    final interstitialAd = await completer.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () {
+        return null;
+      },
+    );
+
     return interstitialAd;
   }
 
@@ -79,13 +88,12 @@ class AdService {
 
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) {
-        // 広告表示成功
+        // 広告が表示された
       },
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        developer.log('インタースティシャル広告の表示に失敗', error: error, name: 'AdService');
         ad.dispose();
       },
     );
