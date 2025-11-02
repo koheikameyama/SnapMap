@@ -234,15 +234,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       await _firestoreService.createPost(post);
 
       if (mounted) {
-        // インタースティシャル広告を表示
-        if (_interstitialAd != null) {
-          await _adService.showInterstitialAd(_interstitialAd);
-        }
-
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('思い出を保存しました')),
         );
         Navigator.of(context).pop();
+
+        // 画面を閉じた後に広告を表示（非同期）
+        if (_interstitialAd != null) {
+          _adService.showInterstitialAd(_interstitialAd);
+        }
       }
     } catch (e) {
       if (mounted) {

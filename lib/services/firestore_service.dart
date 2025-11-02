@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/post.dart';
+import 'storage_service.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final StorageService _storageService = StorageService();
 
   // 投稿を作成
   Future<String> createPost(Post post) async {
@@ -91,7 +93,22 @@ class FirestoreService {
   // 投稿を削除
   Future<void> deletePost(String postId) async {
     try {
-      await _firestore.collection('posts').doc(postId).delete();
+      // まず投稿データを取得して画像URLを取得
+      final doc = await _firestore.collection('posts').doc(postId).get();
+      if (doc.exists) {
+        final post = Post.fromFirestore(doc);
+
+        // Storage上の画像を削除
+        try {
+          await _storageService.deleteImage(post.imageUrl);
+        } catch (e) {
+          print('画像削除エラー（続行）: $e');
+          // 画像削除に失敗してもドキュメントは削除する
+        }
+
+        // Firestoreのドキュメントを削除
+        await _firestore.collection('posts').doc(postId).delete();
+      }
     } catch (e) {
       print('投稿削除エラー: $e');
       rethrow;
