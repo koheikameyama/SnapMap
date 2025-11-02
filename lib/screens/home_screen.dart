@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/post.dart';
 import 'map_screen.dart';
 import 'timeline_screen.dart';
 
@@ -11,10 +12,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  final GlobalKey<MapScreenState> _mapScreenKey = GlobalKey<MapScreenState>();
 
-  final List<Widget> _screens = const [
-    MapScreen(),
-    TimelineScreen(),
+  // 投稿位置を地図で表示
+  void _showPostOnMap(Post post) {
+    setState(() {
+      _currentIndex = 0; // マップタブに切り替え
+    });
+    // フレーム描画後にマップを移動
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _mapScreenKey.currentState?.moveToPost(post);
+    });
+  }
+
+  List<Widget> get _screens => [
+    MapScreen(key: _mapScreenKey),
+    TimelineScreen(onShowPostOnMap: _showPostOnMap),
   ];
 
   @override

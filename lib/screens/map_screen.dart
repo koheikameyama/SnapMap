@@ -17,13 +17,13 @@ import 'create_post_screen.dart';
 import 'profile_edit_screen.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  const MapScreen({Key? key}) : super(key: key);
 
   @override
-  State<MapScreen> createState() => _MapScreenState();
+  State<MapScreen> createState() => MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class MapScreenState extends State<MapScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   final LocationService _locationService = LocationService();
   final AdService _adService = AdService();
@@ -119,6 +119,17 @@ class _MapScreenState extends State<MapScreen> {
 
   // マーカータップ時の処理（写真プレビューを表示）
   void _onMarkerTapped(Post post) {
+    setState(() {
+      _selectedPost = post;
+    });
+  }
+
+  // 特定の投稿位置に移動（外部から呼び出し可能）
+  void moveToPost(Post post) {
+    final position = LatLng(post.latitude, post.longitude);
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(position, 15),
+    );
     setState(() {
       _selectedPost = post;
     });

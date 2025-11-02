@@ -10,7 +10,9 @@ import '../providers/auth_provider.dart';
 import 'post_detail_screen.dart';
 
 class TimelineScreen extends StatefulWidget {
-  const TimelineScreen({super.key});
+  final void Function(Post)? onShowPostOnMap;
+
+  const TimelineScreen({super.key, this.onShowPostOnMap});
 
   @override
   State<TimelineScreen> createState() => _TimelineScreenState();
@@ -315,7 +317,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // カテゴリと日付
+                                      // カテゴリと日付と地図ボタン
                                       Row(
                                         children: [
                                           Icon(category.icon, size: 16, color: category.markerColor),
@@ -329,6 +331,17 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                             ),
                                           ),
                                           const Spacer(),
+                                          // 地図で見るボタン
+                                          if (widget.onShowPostOnMap != null)
+                                            IconButton(
+                                              icon: const Icon(Icons.map, size: 18),
+                                              onPressed: () => widget.onShowPostOnMap!(post),
+                                              tooltip: '地図で見る',
+                                              padding: EdgeInsets.zero,
+                                              constraints: const BoxConstraints(),
+                                              color: Colors.blue,
+                                            ),
+                                          const SizedBox(width: 8),
                                           Text(
                                             DateFormat('yyyy/MM/dd').format(post.createdAt),
                                             style: TextStyle(
