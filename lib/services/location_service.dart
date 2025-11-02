@@ -2,11 +2,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/place_search_result.dart';
 
 class LocationService {
-  // Google Places API Key
-  static const String _apiKey = 'AIzaSyAcQFAU48TNLUSmV_lfS0QcvoxDG2nW-xY';
+  // Google Places API Key（.envから取得）
+  String get _apiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 
   // 位置情報の権限を確認してリクエスト
   Future<bool> requestLocationPermission() async {
