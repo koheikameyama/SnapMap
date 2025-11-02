@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'SnapMap',
+                    'MapDiary',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
@@ -123,7 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         prefixIcon: Icon(Icons.person),
                       ),
                       validator: (value) {
-                        if (!_isLogin && (value == null || value.trim().isEmpty)) {
+                        if (!_isLogin &&
+                            (value == null || value.trim().isEmpty)) {
                           return '表示名を入力してください';
                         }
                         return null;
@@ -200,9 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                     child: Text(
-                      _isLogin
-                          ? 'アカウントをお持ちでない方はこちら'
-                          : 'すでにアカウントをお持ちの方はこちら',
+                      _isLogin ? 'アカウントをお持ちでない方はこちら' : 'すでにアカウントをお持ちの方はこちら',
                     ),
                   ),
 
@@ -222,7 +221,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Googleログインボタン
                   OutlinedButton(
-                    onPressed: authProvider.isLoading ? null : _signInWithGoogle,
+                    onPressed:
+                        authProvider.isLoading ? null : _signInWithGoogle,
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       side: const BorderSide(color: Colors.grey),

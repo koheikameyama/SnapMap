@@ -1,23 +1,23 @@
-# SnapMap セットアップガイド
+# MapDiary セットアップガイド
 
-このガイドでは、SnapMapアプリのセットアップ方法を説明します。
+このガイドでは、MapDiary アプリのセットアップ方法を説明します。
 
 ## 必要な環境
 
-- Flutter 3.0以上
-- Dart 3.0以上
+- Flutter 3.0 以上
+- Dart 3.0 以上
 - Firebase アカウント
 - Google Maps API キー
 
-## 1. Firebaseプロジェクトのセットアップ
+## 1. Firebase プロジェクトのセットアップ
 
-### 1.1 Firebaseプロジェクトを作成
+### 1.1 Firebase プロジェクトを作成
 
 1. [Firebase Console](https://console.firebase.google.com/)にアクセス
 2. 「プロジェクトを追加」をクリック
-3. プロジェクト名を「SnapMap」として作成
+3. プロジェクト名を「MapDiary」として作成
 
-### 1.2 Firebase CLIをインストール
+### 1.2 Firebase CLI をインストール
 
 ```bash
 # Firebase CLIをインストール
@@ -30,7 +30,7 @@ firebase login
 dart pub global activate flutterfire_cli
 ```
 
-### 1.3 FlutterアプリとFirebaseを連携
+### 1.3 Flutter アプリと Firebase を連携
 
 プロジェクトのルートディレクトリで以下を実行：
 
@@ -39,24 +39,25 @@ flutterfire configure
 ```
 
 プロンプトに従って：
-- 既存のFirebaseプロジェクト「SnapMap」を選択
-- iOS、Android、Web、macOSなどプラットフォームを選択
+
+- 既存の Firebase プロジェクト「MapDiary」を選択
+- iOS、Android、Web、macOS などプラットフォームを選択
 - `firebase_options.dart`ファイルが自動生成されます
 
-### 1.4 Firebase Authenticationを有効化
+### 1.4 Firebase Authentication を有効化
 
-1. Firebase Consoleで「Authentication」を選択
+1. Firebase Console で「Authentication」を選択
 2. 「始める」をクリック
 3. 「メール/パスワード」を有効化
 
-### 1.5 Cloud Firestoreを作成
+### 1.5 Cloud Firestore を作成
 
-1. Firebase Consoleで「Firestore Database」を選択
+1. Firebase Console で「Firestore Database」を選択
 2. 「データベースの作成」をクリック
 3. **本番モード**または**テストモード**で開始
    - テストモードの場合は後でセキュリティルールを設定してください
 
-#### Firestoreセキュリティルール（例）
+#### Firestore セキュリティルール（例）
 
 ```
 rules_version = '2';
@@ -85,13 +86,13 @@ service cloud.firestore {
 }
 ```
 
-### 1.6 Firebase Storageを有効化
+### 1.6 Firebase Storage を有効化
 
-1. Firebase Consoleで「Storage」を選択
+1. Firebase Console で「Storage」を選択
 2. 「始める」をクリック
 3. デフォルトのセキュリティルールで開始
 
-#### Storageセキュリティルール（例）
+#### Storage セキュリティルール（例）
 
 ```
 rules_version = '2';
@@ -107,28 +108,28 @@ service firebase.storage {
 }
 ```
 
-## 2. Google Maps APIキーの取得
+## 2. Google Maps API キーの取得
 
-### 2.1 Google Cloud Consoleでプロジェクトを作成
+### 2.1 Google Cloud Console でプロジェクトを作成
 
 1. [Google Cloud Console](https://console.cloud.google.com/)にアクセス
 2. 新しいプロジェクトを作成または既存のプロジェクトを選択
 
-### 2.2 Maps SDK for Android/iOSを有効化
+### 2.2 Maps SDK for Android/iOS を有効化
 
-1. 「APIとサービス」→「ライブラリ」を選択
+1. 「API とサービス」→「ライブラリ」を選択
 2. 「Maps SDK for Android」を検索して有効化
 3. 「Maps SDK for iOS」を検索して有効化
 
-### 2.3 APIキーを作成
+### 2.3 API キーを作成
 
-1. 「APIとサービス」→「認証情報」を選択
-2. 「認証情報を作成」→「APIキー」を選択
-3. APIキーをコピー
+1. 「API とサービス」→「認証情報」を選択
+2. 「認証情報を作成」→「API キー」を選択
+3. API キーをコピー
 
-## 3. Android設定
+## 3. Android 設定
 
-### 3.1 AndroidManifest.xmlを編集
+### 3.1 AndroidManifest.xml を編集
 
 `android/app/src/main/AndroidManifest.xml`に以下を追加：
 
@@ -153,7 +154,7 @@ service firebase.storage {
 </manifest>
 ```
 
-### 3.2 build.gradleを編集
+### 3.2 build.gradle を編集
 
 `android/app/build.gradle`で`minSdkVersion`を確認：
 
@@ -166,9 +167,9 @@ android {
 }
 ```
 
-## 4. iOS設定
+## 4. iOS 設定
 
-### 4.1 Info.plistを編集
+### 4.1 Info.plist を編集
 
 `ios/Runner/Info.plist`に以下を追加：
 
@@ -194,7 +195,7 @@ android {
 </dict>
 ```
 
-### 4.2 Podfileを編集（必要に応じて）
+### 4.2 Podfile を編集（必要に応じて）
 
 `ios/Podfile`で最小バージョンを確認：
 
@@ -202,9 +203,9 @@ android {
 platform :ios, '12.0'  # 12.0以上を推奨
 ```
 
-## 5. main.dartを更新
+## 5. main.dart を更新
 
-`lib/main.dart`のコメントアウトされたFirebase初期化を有効化：
+`lib/main.dart`のコメントアウトされた Firebase 初期化を有効化：
 
 ```dart
 import 'firebase_options.dart';
@@ -245,35 +246,35 @@ flutter run --release
 
 ## トラブルシューティング
 
-### Firebaseの初期化エラー
+### Firebase の初期化エラー
 
 - `flutterfire configure`を再実行
 - `firebase_options.dart`が生成されているか確認
 
-### Google Mapsが表示されない
+### Google Maps が表示されない
 
-- APIキーが正しく設定されているか確認
-- Google Cloud ConsoleでMaps SDKが有効化されているか確認
-- APIキーの制限を確認（開発時は制限なしを推奨）
+- API キーが正しく設定されているか確認
+- Google Cloud Console で Maps SDK が有効化されているか確認
+- API キーの制限を確認（開発時は制限なしを推奨）
 
 ### 位置情報が取得できない
 
-- AndroidManifest.xml/Info.plistに権限が追加されているか確認
+- AndroidManifest.xml/Info.plist に権限が追加されているか確認
 - 実機で動作確認（シミュレータでは位置情報が正しく動作しないことがある）
 
 ### 画像アップロードが失敗する
 
-- Firebase StorageのセキュリティルールでwritePermissionが許可されているか確認
+- Firebase Storage のセキュリティルールで writePermission が許可されているか確認
 - ファイルサイズ制限を確認
 
 ## サンプルデータの追加
 
-初期状態では投稿がないため、Firebase Consoleから手動でサンプル投稿を追加することをおすすめします。
+初期状態では投稿がないため、Firebase Console から手動でサンプル投稿を追加することをおすすめします。
 
-### Firestoreにサンプル投稿を追加
+### Firestore にサンプル投稿を追加
 
-1. Firebase Consoleで「Firestore Database」を開く
-2. 「postsコレクション」を作成
+1. Firebase Console で「Firestore Database」を開く
+2. 「posts コレクション」を作成
 3. ドキュメントを追加：
 
 ```json
@@ -300,7 +301,7 @@ flutter run --release
 
 ## 参考リンク
 
-- [FlutterFire公式ドキュメント](https://firebase.flutter.dev/)
-- [Google Maps Flutter公式ドキュメント](https://pub.dev/packages/google_maps_flutter)
+- [FlutterFire 公式ドキュメント](https://firebase.flutter.dev/)
+- [Google Maps Flutter 公式ドキュメント](https://pub.dev/packages/google_maps_flutter)
 - [Firebase Console](https://console.firebase.google.com/)
 - [Google Cloud Console](https://console.cloud.google.com/)
