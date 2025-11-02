@@ -262,7 +262,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         Icon(Icons.photo_library_outlined, size: 64, color: Colors.grey[400]),
                         const SizedBox(height: 16),
                         Text(
-                          '投稿がありません',
+                          '思い出がありません',
                           style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                         ),
                       ],

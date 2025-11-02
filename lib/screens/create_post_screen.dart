@@ -240,14 +240,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('投稿が完了しました')),
+          const SnackBar(content: Text('思い出を保存しました')),
         );
         Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('投稿に失敗しました: $e')),
+          SnackBar(content: Text('保存に失敗しました: $e')),
         );
       }
     } finally {
@@ -263,7 +263,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('投稿を作成', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text('思い出を残す', style: TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -521,7 +521,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '投稿は30日間表示されます',
+                      'あなただけの思い出として地図に保存されます',
                       style: TextStyle(color: Colors.blue[900], fontSize: 14),
                     ),
                   ),
@@ -548,7 +548,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ),
                     )
                   : const Text(
-                      '投稿する',
+                      '保存する',
                       style: TextStyle(fontSize: 16),
                     ),
             ),

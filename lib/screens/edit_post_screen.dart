@@ -54,7 +54,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
       if (mounted) {
         Navigator.of(context).pop(true); // 更新成功を通知
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('投稿を更新しました')),
+          const SnackBar(content: Text('思い出を更新しました')),
         );
       }
     } catch (e) {
@@ -76,7 +76,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('投稿を編集'),
+        title: const Text('思い出を編集'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [

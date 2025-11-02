@@ -25,8 +25,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('投稿を削除'),
-        content: const Text('この投稿を削除しますか？この操作は取り消せません。'),
+        title: const Text('思い出を削除'),
+        content: const Text('この思い出を削除しますか？この操作は取り消せません。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -40,7 +40,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   Navigator.of(context).pop(); // ダイアログを閉じる
                   Navigator.of(context).pop(); // 詳細画面を閉じる
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('投稿を削除しました')),
+                    const SnackBar(content: Text('思い出を削除しました')),
                   );
                 }
               } catch (e) {
@@ -66,7 +66,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('投稿詳細'),
+        title: const Text('思い出の詳細'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
