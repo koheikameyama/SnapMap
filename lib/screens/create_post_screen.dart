@@ -33,7 +33,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final _captionController = TextEditingController();
   final _locationSearchController = TextEditingController();
   File? _selectedImage;
-  PostCategory _selectedCategory = PostCategory.daily;
+  PostCategory _selectedCategory = PostCategory.other;
   bool _isLoading = false;
   double? _latitude;
   double? _longitude;
