@@ -12,7 +12,6 @@ class Post {
   final String category;
   final List<String> tags;
   final DateTime createdAt;
-  final int likesCount;
 
   Post({
     required this.id,
@@ -26,7 +25,6 @@ class Post {
     required this.category,
     required this.tags,
     required this.createdAt,
-    this.likesCount = 0,
   });
 
   // Firestoreドキュメントから変換
@@ -44,7 +42,6 @@ class Post {
       category: data['category'] ?? 'その他',
       tags: List<String>.from(data['tags'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      likesCount: data['likesCount'] ?? 0,
     );
   }
 
@@ -61,7 +58,6 @@ class Post {
       'category': category,
       'tags': tags,
       'createdAt': Timestamp.fromDate(createdAt),
-      'likesCount': likesCount,
     };
   }
 }

@@ -77,7 +77,12 @@ class _MapScreenState extends State<MapScreen> {
 
   // 投稿を読み込む
   void _loadPosts() {
-    _firestoreService.getAllPosts().listen((posts) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userId = authProvider.user?.uid;
+
+    if (userId == null) return;
+
+    _firestoreService.getAllPosts(userId).listen((posts) {
       setState(() {
         _posts = posts;
       });

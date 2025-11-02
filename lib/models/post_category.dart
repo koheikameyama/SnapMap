@@ -88,4 +88,9 @@ extension PostCategoryExtension on PostCategory {
   String toFirestoreString() {
     return displayName;
   }
+
+  // value プロパティ（保存用の文字列）
+  String get value {
+    return displayName;
+  }
 }

@@ -4,10 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/post.dart';
 import '../models/post_category.dart';
-import '../models/user_model.dart';
 import '../services/firestore_service.dart';
-import '../services/auth_service.dart';
 import '../providers/auth_provider.dart';
+import 'edit_post_screen.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final Post post;
@@ -20,81 +19,6 @@ class PostDetailScreen extends StatefulWidget {
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
   final FirestoreService _firestoreService = FirestoreService();
-  final AuthService _authService = AuthService();
-  bool _isLiked = false;
-  int _likesCount = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _likesCount = widget.post.likesCount;
-  }
-
-  // いいねボタンを押す
-  Future<void> _toggleLike() async {
-    setState(() {
-      _isLiked = !_isLiked;
-      _likesCount = _isLiked ? _likesCount + 1 : _likesCount - 1;
-    });
-
-    try {
-      if (_isLiked) {
-        await _firestoreService.likePost(widget.post.id);
-      }
-    } catch (e) {
-      // エラーが発生した場合、状態を元に戻す
-      setState(() {
-        _isLiked = !_isLiked;
-        _likesCount = _isLiked ? _likesCount + 1 : _likesCount - 1;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('エラーが発生しました: $e')),
-        );
-      }
-    }
-  }
-
-  // 報告ダイアログを表示
-  void _showReportDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('投稿を報告'),
-        content: const Text('この投稿を不適切なコンテンツとして報告しますか？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
-          ),
-          TextButton(
-            onPressed: () async {
-              try {
-                await _firestoreService.reportPost(
-                  widget.post.id,
-                  '不適切なコンテンツ',
-                );
-                if (mounted) {
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('報告を送信しました')),
-                  );
-                }
-              } catch (e) {
-                if (mounted) {
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('報告の送信に失敗しました: $e')),
-                  );
-                }
-              }
-            },
-            child: const Text('報告', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
 
   // 投稿を削除
   void _deletePost() {
@@ -146,39 +70,27 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'delete') {
-                _deletePost();
-              } else if (value == 'report') {
-                _showReportDialog();
-              }
-            },
-            itemBuilder: (context) => [
-              if (isOwnPost)
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('削除'),
-                    ],
+          if (isOwnPost) ...[
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditPostScreen(post: widget.post),
                   ),
-                ),
-              if (!isOwnPost)
-                const PopupMenuItem(
-                  value: 'report',
-                  child: Row(
-                    children: [
-                      Icon(Icons.report, color: Colors.orange),
-                      SizedBox(width: 8),
-                      Text('報告'),
-                    ],
-                  ),
-                ),
-            ],
-          ),
+                );
+                // 更新された場合は画面を再読み込み
+                if (result == true && mounted) {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: _deletePost,
+            ),
+          ],
         ],
       ),
       body: SingleChildScrollView(
@@ -207,75 +119,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ユーザー情報と日時
-                  FutureBuilder<UserModel?>(
-                    future: _authService.getUserData(widget.post.userId),
-                    builder: (context, snapshot) {
-                      final displayName = snapshot.data?.displayName ?? widget.post.userName;
-                      final photoUrl = snapshot.data?.photoUrl;
-
-                      return Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.grey[300],
-                            backgroundImage: photoUrl != null
-                                ? CachedNetworkImageProvider(photoUrl)
-                                : null,
-                            child: photoUrl == null
-                                ? Text(
-                                    displayName[0].toUpperCase(),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  displayName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  DateFormat('yyyy/MM/dd HH:mm')
-                                      .format(widget.post.createdAt),
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // いいねボタン
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          _isLiked ? Icons.favorite : Icons.favorite_border,
-                          color: _isLiked ? Colors.red : Colors.grey,
-                        ),
-                        onPressed: _toggleLike,
-                      ),
-                      Text(
-                        '$_likesCount',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
+                  // 日時
+                  Text(
+                    DateFormat('yyyy/MM/dd HH:mm').format(widget.post.createdAt),
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(height: 16),
 

@@ -1,5 +1,5 @@
-name: snap_map
-description: "A new Flutter project."
+name: map_diary
+description: "個人用の思い出を写真付きで地図に残すアルバムアプリ"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -49,6 +49,8 @@ dependencies:
   google_sign_in: ^6.2.2
   http: ^1.2.0
   google_mobile_ads: ^5.2.0
+  path_provider: ^2.1.1
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

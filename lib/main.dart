@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
 import 'screens/login_screen.dart';
-import 'screens/map_screen.dart';
+import 'screens/home_screen.dart';
 import 'services/ad_service.dart';
 
 void main() async {
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
-        title: 'SnapMap',
+        title: 'MapDiary',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/login',
         routes: {
           '/login': (context) => const LoginScreen(),
-          '/map': (context) => const MapScreen(),
+          '/home': (context) => const HomeScreen(),
         },
         home: const AuthWrapper(),
       ),
@@ -107,7 +107,7 @@ class AuthWrapper extends StatelessWidget {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
         if (authProvider.isAuthenticated) {
-          return const MapScreen();
+          return const HomeScreen();
         } else {
           return const LoginScreen();
         }

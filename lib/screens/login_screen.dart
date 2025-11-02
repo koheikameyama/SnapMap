@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (success && mounted) {
-      Navigator.of(context).pushReplacementNamed('/map');
+      Navigator.of(context).pushReplacementNamed('/home');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
     bool success = await authProvider.signInWithGoogle();
 
     if (success && mounted) {
-      Navigator.of(context).pushReplacementNamed('/map');
+      Navigator.of(context).pushReplacementNamed('/home');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

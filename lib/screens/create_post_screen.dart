@@ -176,15 +176,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  // 投稿ボタン押下時の処理（警告モーダルを表示）
+  // 投稿ボタン押下時の処理（確認モーダルを表示）
   Future<void> _createPost() async {
-    // 警告モーダルを表示
+    // 確認モーダルを表示
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('投稿前の確認'),
+        title: const Text('投稿の保存'),
         content: const Text(
-          '人物や住居が特定されないように注意して投稿してください。\n\nプライバシーに配慮した投稿を心がけましょう。',
+          'この思い出を地図に保存します。\n\nあなただけが見ることができる個人用アルバムとして記録されます。',
         ),
         actions: [
           TextButton(

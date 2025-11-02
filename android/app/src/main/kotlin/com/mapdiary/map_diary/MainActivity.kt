@@ -1,4 +1,4 @@
-package com.snapmap.snap_map
+package com.mapdiary.map_diary
 
 import io.flutter.embedding.android.FlutterActivity
 
