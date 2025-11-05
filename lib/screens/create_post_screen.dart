@@ -137,25 +137,44 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       }
 
       // 緯度を計算
+      debugPrint('🔢 GPS Latitude 生データ: $gpsLatitude');
+      debugPrint('🔢 GPS Latitude type: ${gpsLatitude.runtimeType}');
       final latValues = gpsLatitude.values.toList();
+      debugPrint('🔢 Latitude values: $latValues');
+      debugPrint(
+          '🔢 Latitude values[0]: ${latValues[0]} (${latValues[0].runtimeType})');
+      debugPrint(
+          '🔢 Latitude values[1]: ${latValues[1]} (${latValues[1].runtimeType})');
+      debugPrint(
+          '🔢 Latitude values[2]: ${latValues[2]} (${latValues[2].runtimeType})');
+
       double latitude = _convertGPSCoordinate(
         latValues[0].toDouble(),
         latValues[1].toDouble(),
         latValues[2].toDouble(),
       );
+      debugPrint('🔢 変換後の緯度: $latitude');
+
       if (gpsLatitudeRef?.printable == 'S') {
         latitude = -latitude;
+        debugPrint('🔢 南半球のため負の値に変換: $latitude');
       }
 
       // 経度を計算
+      debugPrint('🔢 GPS Longitude 生データ: $gpsLongitude');
       final lonValues = gpsLongitude.values.toList();
+      debugPrint('🔢 Longitude values: $lonValues');
+
       double longitude = _convertGPSCoordinate(
         lonValues[0].toDouble(),
         lonValues[1].toDouble(),
         lonValues[2].toDouble(),
       );
+      debugPrint('🔢 変換後の経度: $longitude');
+
       if (gpsLongitudeRef?.printable == 'W') {
         longitude = -longitude;
+        debugPrint('🔢 西経のため負の値に変換: $longitude');
       }
 
       debugPrint('✅ 位置情報取得成功: ($latitude, $longitude)');
