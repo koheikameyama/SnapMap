@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -139,6 +140,88 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return degrees + (minutes / 60.0) + (seconds / 3600.0);
   }
 
+  // 2点間の距離を計算（Haversine formula）メートル単位
+  double _calculateDistance(
+      double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371000; // メートル
+    final dLat = _toRadians(lat2 - lat1);
+    final dLon = _toRadians(lon2 - lon1);
+
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_toRadians(lat1)) *
+            cos(_toRadians(lat2)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return earthRadius * c;
+  }
+
+  // 度をラジアンに変換
+  double _toRadians(double degrees) => degrees * pi / 180;
+
+  // 位置情報の整合性をチェック
+  Future<bool> _checkLocationConsistency() async {
+    if (_selectedImages.length <= 1) return true;
+
+    List<Map<String, double>> locations = [];
+
+    // 全ての画像から位置情報を取得
+    for (var image in _selectedImages) {
+      final loc = await _extractLocationFromImage(image);
+      if (loc != null) {
+        locations.add(loc);
+      }
+    }
+
+    // 位置情報が1つ以下なら問題なし
+    if (locations.length <= 1) return true;
+
+    // 最初の位置を基準に距離を計算
+    final baseLocation = locations.first;
+    const double threshold = 200.0; // 200m
+
+    for (var i = 1; i < locations.length; i++) {
+      final distance = _calculateDistance(
+        baseLocation['latitude']!,
+        baseLocation['longitude']!,
+        locations[i]['latitude']!,
+        locations[i]['longitude']!,
+      );
+
+      if (distance > threshold) {
+        // 閾値を超えた写真がある
+        if (!mounted) return false;
+
+        final result = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('異なる場所の写真が含まれています'),
+            content: Text(
+              '${(distance / 1000).toStringAsFixed(1)}km離れた場所で撮影された写真が含まれています。\n'
+              '\n最初の写真の場所を使用しますか？\n'
+              'または、場所を手動で選択してください。',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('写真を選び直す'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('このまま続ける'),
+              ),
+            ],
+          ),
+        );
+
+        return result ?? false;
+      }
+    }
+
+    return true;
+  }
+
   // 検索窓のフォーカスリスナーを設定
   void _setupLocationSearchFocus() {
     _locationSearchFocusNode.addListener(() async {
@@ -213,6 +296,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _hasLoadedNearbyPlaces = false;
         _searchResults = [];
       });
+
+      // 位置情報の整合性をチェック（複数枚の場合のみ）
+      if (_selectedImages.length > 1) {
+        final isConsistent = await _checkLocationConsistency();
+        if (!isConsistent) {
+          // ユーザーが「選び直す」を選択した場合、追加した画像を削除
+          setState(() {
+            _selectedImages.removeLast();
+          });
+          return;
+        }
+      }
+
       // 最初の写真のEXIFから位置情報を取得
       if (_selectedImages.length == 1) {
         await _initializeLocation();
@@ -243,6 +339,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _hasLoadedNearbyPlaces = false;
         _searchResults = [];
       });
+
+      // 位置情報の整合性をチェック
+      final isConsistent = await _checkLocationConsistency();
+      if (!isConsistent) {
+        // ユーザーが「選び直す」を選択した場合
+        setState(() {
+          // 今回追加した画像のみを削除
+          _selectedImages.removeRange(
+            _selectedImages.length - imagesToAdd.length,
+            _selectedImages.length,
+          );
+        });
+        return;
+      }
 
       // 最初の写真のEXIFから位置情報を取得
       if (_selectedImages.length == imagesToAdd.length) {
