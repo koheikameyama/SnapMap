@@ -60,40 +60,26 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   // 初期位置情報を取得
   Future<void> _initializeLocation() async {
-    debugPrint('🗺️ 位置情報の初期化を開始');
-
     // 写真が選択されている場合、最初の写真のEXIFから位置情報を取得
     if (_selectedImages.isNotEmpty) {
-      debugPrint('📸 選択画像数: ${_selectedImages.length}');
-      debugPrint('📸 最初の画像からEXIF取得を試行');
-
       final exifLocation =
           await _extractLocationFromImage(_selectedImages.first);
       if (exifLocation != null && mounted) {
-        debugPrint('✅ EXIFから位置情報を取得しました');
         setState(() {
           _latitude = exifLocation['latitude'];
           _longitude = exifLocation['longitude'];
         });
         return;
-      } else {
-        debugPrint('⚠️ EXIFから位置情報が取得できませんでした');
       }
-    } else {
-      debugPrint('📸 選択画像なし');
     }
 
     // EXIFに位置情報がない場合、または写真がない場合は現在地を取得
-    debugPrint('📍 現在地の取得を試行');
     final position = await _locationService.getCurrentLocation();
     if (position != null && mounted) {
-      debugPrint('✅ 現在地を取得しました: (${position.latitude}, ${position.longitude})');
       setState(() {
         _latitude = position.latitude;
         _longitude = position.longitude;
       });
-    } else {
-      debugPrint('❌ 現在地の取得に失敗しました');
     }
   }
 
@@ -103,20 +89,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       final bytes = await imageFile.readAsBytes();
       final data = await readExifFromBytes(bytes);
 
-      debugPrint('📸 EXIF Debug - 画像: ${imageFile.path}');
-      debugPrint('📸 EXIF データ数: ${data.length}');
-
       if (data.isEmpty) {
-        debugPrint('❌ EXIFデータが空です');
         return null;
-      }
-
-      // 全てのEXIFキーを表示（デバッグ用）
-      debugPrint('📋 利用可能なEXIFキー:');
-      for (var key in data.keys) {
-        if (key.contains('GPS') || key.contains('Location')) {
-          debugPrint('  - $key: ${data[key]}');
-        }
       }
 
       // GPS情報を取得
@@ -125,68 +99,38 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       final gpsLongitude = data['GPS GPSLongitude'];
       final gpsLongitudeRef = data['GPS GPSLongitudeRef'];
 
-      debugPrint('🗺️ GPS情報:');
-      debugPrint('  - Latitude: $gpsLatitude');
-      debugPrint('  - LatitudeRef: $gpsLatitudeRef');
-      debugPrint('  - Longitude: $gpsLongitude');
-      debugPrint('  - LongitudeRef: $gpsLongitudeRef');
-
       if (gpsLatitude == null || gpsLongitude == null) {
-        debugPrint('❌ GPS情報がありません');
         return null;
       }
 
       // 緯度を計算
-      debugPrint('🔢 GPS Latitude 生データ: $gpsLatitude');
-      debugPrint('🔢 GPS Latitude type: ${gpsLatitude.runtimeType}');
       final latValues = gpsLatitude.values.toList();
-      debugPrint('🔢 Latitude values: $latValues');
-      debugPrint(
-          '🔢 Latitude values[0]: ${latValues[0]} (${latValues[0].runtimeType})');
-      debugPrint(
-          '🔢 Latitude values[1]: ${latValues[1]} (${latValues[1].runtimeType})');
-      debugPrint(
-          '🔢 Latitude values[2]: ${latValues[2]} (${latValues[2].runtimeType})');
-
       double latitude = _convertGPSCoordinate(
         latValues[0].toDouble(),
         latValues[1].toDouble(),
         latValues[2].toDouble(),
       );
-      debugPrint('🔢 変換後の緯度: $latitude');
-
       if (gpsLatitudeRef?.printable == 'S') {
         latitude = -latitude;
-        debugPrint('🔢 南半球のため負の値に変換: $latitude');
       }
 
       // 経度を計算
-      debugPrint('🔢 GPS Longitude 生データ: $gpsLongitude');
       final lonValues = gpsLongitude.values.toList();
-      debugPrint('🔢 Longitude values: $lonValues');
-
       double longitude = _convertGPSCoordinate(
         lonValues[0].toDouble(),
         lonValues[1].toDouble(),
         lonValues[2].toDouble(),
       );
-      debugPrint('🔢 変換後の経度: $longitude');
-
       if (gpsLongitudeRef?.printable == 'W') {
         longitude = -longitude;
-        debugPrint('🔢 西経のため負の値に変換: $longitude');
       }
-
-      debugPrint('✅ 位置情報取得成功: ($latitude, $longitude)');
 
       return {
         'latitude': latitude,
         'longitude': longitude,
       };
-    } catch (e, stackTrace) {
+    } catch (e) {
       // EXIFデータの読み取りに失敗した場合はnullを返す
-      debugPrint('❌ EXIF読み取りエラー: $e');
-      debugPrint('スタックトレース: $stackTrace');
       return null;
     }
   }
