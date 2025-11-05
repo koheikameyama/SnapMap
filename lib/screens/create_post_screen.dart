@@ -320,11 +320,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       return;
     }
 
+    // オリジナル画像を取得（EXIFを保持するため）
     final XFile? image = await _imagePicker.pickImage(
       source: ImageSource.camera,
-      maxWidth: 1920,
-      maxHeight: 1920,
       imageQuality: 85,
+      // maxWidth/maxHeightを削除してEXIFを保持
     );
 
     if (image != null) {
@@ -360,10 +360,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       return;
     }
 
+    // まず、オリジナル画像を取得（EXIFを保持するため）
     final List<XFile> images = await _imagePicker.pickMultiImage(
-      maxWidth: 1920,
-      maxHeight: 1920,
       imageQuality: 85,
+      // maxWidth/maxHeightを削除してEXIFを保持
     );
 
     if (images.isNotEmpty) {
