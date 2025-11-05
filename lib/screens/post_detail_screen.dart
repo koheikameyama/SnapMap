@@ -34,19 +34,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           ),
           TextButton(
             onPressed: () async {
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
               try {
                 await _firestoreService.deletePost(widget.post.id);
                 if (mounted) {
-                  Navigator.of(context).pop(); // ダイアログを閉じる
-                  Navigator.of(context).pop(); // 詳細画面を閉じる
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  navigator.pop(); // ダイアログを閉じる
+                  navigator.pop(); // 詳細画面を閉じる
+                  messenger.showSnackBar(
                     const SnackBar(content: Text('思い出を削除しました')),
                   );
                 }
               } catch (e) {
                 if (mounted) {
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  navigator.pop();
+                  messenger.showSnackBar(
                     SnackBar(content: Text('削除に失敗しました: $e')),
                   );
                 }
@@ -74,15 +76,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () async {
-                final result = await Navigator.push(
-                  context,
+                final navigator = Navigator.of(context);
+                final result = await navigator.push(
                   MaterialPageRoute(
                     builder: (context) => EditPostScreen(post: widget.post),
                   ),
                 );
                 // 更新された場合は画面を再読み込み
                 if (result == true && mounted) {
-                  Navigator.pop(context);
+                  navigator.pop();
                 }
               },
             ),
@@ -121,7 +123,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 children: [
                   // 日時
                   Text(
-                    DateFormat('yyyy/MM/dd HH:mm').format(widget.post.createdAt),
+                    DateFormat('yyyy/MM/dd HH:mm')
+                        .format(widget.post.createdAt),
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -132,9 +135,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   // カテゴリ
                   Builder(
                     builder: (context) {
-                      final category = PostCategoryExtension.fromString(widget.post.category);
+                      final category = PostCategoryExtension.fromString(
+                          widget.post.category);
                       return Chip(
-                        avatar: Icon(category.icon, size: 18, color: category.markerColor),
+                        avatar: Icon(category.icon,
+                            size: 18, color: category.markerColor),
                         label: Text(category.displayName),
                         backgroundColor: category.markerColor.withOpacity(0.2),
                       );

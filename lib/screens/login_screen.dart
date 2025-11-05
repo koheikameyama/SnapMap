@@ -86,172 +86,174 @@ class _LoginScreenState extends State<LoginScreen> {
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ロゴ
-                  const Icon(
-                    Icons.map,
-                    size: 80,
-                    color: Colors.blue,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'MapDiary',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '思い出を、地図に残そう',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey,
-                        ),
-                  ),
-                  const SizedBox(height: 48),
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // ロゴ
+                    const Icon(
+                      Icons.map,
+                      size: 80,
+                      color: Colors.blue,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'MapDiary',
+                      textAlign: TextAlign.center,
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '思い出を、地図に残そう',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey,
+                          ),
+                    ),
+                    const SizedBox(height: 48),
 
-                  // 表示名（サインアップ時のみ）
-                  if (!_isLogin)
-                    TextFormField(
-                      controller: _displayNameController,
-                      decoration: const InputDecoration(
-                        labelText: '表示名',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.person),
+                    // 表示名（サインアップ時のみ）
+                    if (!_isLogin)
+                      TextFormField(
+                        controller: _displayNameController,
+                        decoration: const InputDecoration(
+                          labelText: '表示名',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                        validator: (value) {
+                          if (!_isLogin &&
+                              (value == null || value.trim().isEmpty)) {
+                            return '表示名を入力してください';
+                          }
+                          return null;
+                        },
                       ),
+                    if (!_isLogin) const SizedBox(height: 16),
+
+                    // メールアドレス
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'メールアドレス',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.email),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        if (!_isLogin &&
-                            (value == null || value.trim().isEmpty)) {
-                          return '表示名を入力してください';
+                        if (value == null || value.trim().isEmpty) {
+                          return 'メールアドレスを入力してください';
+                        }
+                        if (!value.contains('@')) {
+                          return '有効なメールアドレスを入力してください';
                         }
                         return null;
                       },
                     ),
-                  if (!_isLogin) const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                  // メールアドレス
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'メールアドレス',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'メールアドレスを入力してください';
-                      }
-                      if (!value.contains('@')) {
-                        return '有効なメールアドレスを入力してください';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // パスワード
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'パスワード',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
-                    ),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'パスワードを入力してください';
-                      }
-                      if (value.length < 6) {
-                        return 'パスワードは6文字以上で入力してください';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-
-                  // ログイン/サインアップボタン
-                  FilledButton(
-                    onPressed: authProvider.isLoading ? null : _submit,
-                    child: authProvider.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            _isLogin ? 'ログイン' : 'サインアップ',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 切り替えボタン
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
-                    },
-                    child: Text(
-                      _isLogin ? 'アカウントをお持ちでない方はこちら' : 'すでにアカウントをお持ちの方はこちら',
-                    ),
-                  ),
-
-                  // 区切り線
-                  const SizedBox(height: 24),
-                  Row(
-                    children: const [
-                      Expanded(child: Divider()),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text('または'),
+                    // パスワード
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        labelText: 'パスワード',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.lock),
                       ),
-                      Expanded(child: Divider()),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Googleログインボタン
-                  OutlinedButton(
-                    onPressed:
-                        authProvider.isLoading ? null : _signInWithGoogle,
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: const BorderSide(color: Colors.grey),
-                      foregroundColor: Colors.black87,
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'パスワードを入力してください';
+                        }
+                        if (value.length < 6) {
+                          return 'パスワードは6文字以上で入力してください';
+                        }
+                        return null;
+                      },
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.g_mobiledata, size: 32, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Text(
-                          'Googleでログイン',
-                          style: TextStyle(fontSize: 16),
+                    const SizedBox(height: 24),
+
+                    // ログイン/サインアップボタン
+                    FilledButton(
+                      onPressed: authProvider.isLoading ? null : _submit,
+                      child: authProvider.isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              _isLogin ? 'ログイン' : 'サインアップ',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 切り替えボタン
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isLogin = !_isLogin;
+                        });
+                      },
+                      child: Text(
+                        _isLogin ? 'アカウントをお持ちでない方はこちら' : 'すでにアカウントをお持ちの方はこちら',
+                      ),
+                    ),
+
+                    // 区切り線
+                    const SizedBox(height: 24),
+                    const Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text('または'),
                         ),
+                        Expanded(child: Divider()),
                       ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+
+                    // Googleログインボタン
+                    OutlinedButton(
+                      onPressed:
+                          authProvider.isLoading ? null : _signInWithGoogle,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        side: const BorderSide(color: Colors.grey),
+                        foregroundColor: Colors.black87,
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.g_mobiledata,
+                              size: 32, color: Colors.blue),
+                          SizedBox(width: 8),
+                          Text(
+                            'Googleでログイン',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 }

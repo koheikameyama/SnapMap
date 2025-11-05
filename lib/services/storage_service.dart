@@ -11,7 +11,8 @@ class StorageService {
     try {
       // ファイル名を生成（タイムスタンプ + ユーザーID + 元のファイル名）
       String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      String fileName = '${userId}_${timestamp}${path.extension(imageFile.path)}';
+      String extension = path.extension(imageFile.path);
+      String fileName = '${userId}_$timestamp$extension';
 
       // ストレージ参照を作成
       Reference ref = _storage.ref().child('posts').child(fileName);
@@ -37,7 +38,8 @@ class StorageService {
     try {
       // ファイル名を生成（ユーザーID + タイムスタンプ）
       String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      String fileName = '${userId}_${timestamp}${path.extension(imageFile.path)}';
+      String extension = path.extension(imageFile.path);
+      String fileName = '${userId}_$timestamp$extension';
 
       // ストレージ参照を作成（profile_imagesフォルダ）
       Reference ref = _storage.ref().child('profile_images').child(fileName);

@@ -21,7 +21,7 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   List<Post> _posts = [];
-  Set<PostCategory> _selectedCategories = {};
+  final Set<PostCategory> _selectedCategories = {};
   String _searchQuery = '';
   DateTime? _startDate;
   DateTime? _endDate;
@@ -60,11 +60,15 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
     // 日付範囲フィルタ
     if (_startDate != null) {
-      filtered = filtered.where((post) => post.createdAt.isAfter(_startDate!)).toList();
+      filtered = filtered
+          .where((post) => post.createdAt.isAfter(_startDate!))
+          .toList();
     }
     if (_endDate != null) {
-      final endOfDay = DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
-      filtered = filtered.where((post) => post.createdAt.isBefore(endOfDay)).toList();
+      final endOfDay =
+          DateTime(_endDate!.year, _endDate!.month, _endDate!.day, 23, 59, 59);
+      filtered =
+          filtered.where((post) => post.createdAt.isBefore(endOfDay)).toList();
     }
 
     // キャプション検索
@@ -116,7 +120,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                   label: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(category.icon, size: 18, color: category.markerColor),
+                      Icon(category.icon,
+                          size: 18, color: category.markerColor),
                       const SizedBox(width: 4),
                       Text(category.displayName),
                     ],
@@ -217,7 +222,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
           ),
 
           // フィルタ情報表示
-          if (_startDate != null || _endDate != null || _selectedCategories.isNotEmpty)
+          if (_startDate != null ||
+              _endDate != null ||
+              _selectedCategories.isNotEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Wrap(
@@ -261,11 +268,13 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.photo_library_outlined, size: 64, color: Colors.grey[400]),
+                        Icon(Icons.photo_library_outlined,
+                            size: 64, color: Colors.grey[400]),
                         const SizedBox(height: 16),
                         Text(
                           '思い出がありません',
-                          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                          style:
+                              TextStyle(fontSize: 16, color: Colors.grey[600]),
                         ),
                       ],
                     ),
@@ -274,16 +283,19 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     itemCount: filteredPosts.length,
                     itemBuilder: (context, index) {
                       final post = filteredPosts[index];
-                      final category = PostCategoryExtension.fromString(post.category);
+                      final category =
+                          PostCategoryExtension.fromString(post.category);
 
                       return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         child: InkWell(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PostDetailScreen(post: post),
+                                builder: (context) =>
+                                    PostDetailScreen(post: post),
                               ),
                             );
                           },
@@ -302,9 +314,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                     fit: BoxFit.cover,
                                     placeholder: (context, url) => Container(
                                       color: Colors.grey[300],
-                                      child: const Center(child: CircularProgressIndicator()),
+                                      child: const Center(
+                                          child: CircularProgressIndicator()),
                                     ),
-                                    errorWidget: (context, url, error) => Container(
+                                    errorWidget: (context, url, error) =>
+                                        Container(
                                       color: Colors.grey[300],
                                       child: const Icon(Icons.error),
                                     ),
@@ -315,12 +329,15 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                 // 情報
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // カテゴリと日付と地図ボタン
                                       Row(
                                         children: [
-                                          Icon(category.icon, size: 16, color: category.markerColor),
+                                          Icon(category.icon,
+                                              size: 16,
+                                              color: category.markerColor),
                                           const SizedBox(width: 4),
                                           Text(
                                             category.displayName,
@@ -334,16 +351,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                           // 地図で見るボタン
                                           if (widget.onShowPostOnMap != null)
                                             IconButton(
-                                              icon: const Icon(Icons.map, size: 18),
-                                              onPressed: () => widget.onShowPostOnMap!(post),
+                                              icon: const Icon(Icons.map,
+                                                  size: 18),
+                                              onPressed: () =>
+                                                  widget.onShowPostOnMap!(post),
                                               tooltip: '地図で見る',
                                               padding: EdgeInsets.zero,
-                                              constraints: const BoxConstraints(),
+                                              constraints:
+                                                  const BoxConstraints(),
                                               color: Colors.blue,
                                             ),
                                           const SizedBox(width: 8),
                                           Text(
-                                            DateFormat('yyyy/MM/dd').format(post.createdAt),
+                                            DateFormat('yyyy/MM/dd')
+                                                .format(post.createdAt),
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey[600],
@@ -357,7 +378,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                       if (post.locationName != null)
                                         Row(
                                           children: [
-                                            Icon(Icons.place, size: 14, color: Colors.grey[600]),
+                                            Icon(Icons.place,
+                                                size: 14,
+                                                color: Colors.grey[600]),
                                             const SizedBox(width: 4),
                                             Expanded(
                                               child: Text(
@@ -375,7 +398,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                       const SizedBox(height: 4),
 
                                       // キャプション
-                                      if (post.caption != null && post.caption!.isNotEmpty)
+                                      if (post.caption != null &&
+                                          post.caption!.isNotEmpty)
                                         Text(
                                           post.caption!,
                                           style: const TextStyle(fontSize: 14),

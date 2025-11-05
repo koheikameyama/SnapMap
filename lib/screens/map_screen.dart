@@ -17,7 +17,7 @@ import 'create_post_screen.dart';
 import 'profile_edit_screen.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  const MapScreen({super.key});
 
   @override
   State<MapScreen> createState() => MapScreenState();
@@ -32,11 +32,10 @@ class MapScreenState extends State<MapScreen> {
   LatLng _currentPosition = const LatLng(35.6812, 139.7671); // 東京駅がデフォルト
   Set<Marker> _markers = {};
   List<Post> _posts = [];
-  Set<PostCategory> _selectedCategories = {}; // 選択中のカテゴリ（空の場合は全て表示）
+  final Set<PostCategory> _selectedCategories = {}; // 選択中のカテゴリ（空の場合は全て表示）
 
   final _searchController = TextEditingController();
   List<PlaceSearchResult> _searchResults = [];
-  bool _isSearching = false;
 
   Post? _selectedPost; // 選択された投稿（写真プレビュー表示用）
 
@@ -229,7 +228,6 @@ class MapScreenState extends State<MapScreen> {
     setState(() {
       _searchResults = [];
       _searchController.clear();
-      _isSearching = false;
     });
 
     // 選択した場所に地図を移動
@@ -270,7 +268,8 @@ class MapScreenState extends State<MapScreen> {
               radius: 16,
               backgroundColor: Colors.white,
               backgroundImage: authProvider.userModel?.photoUrl != null
-                  ? CachedNetworkImageProvider(authProvider.userModel!.photoUrl!)
+                  ? CachedNetworkImageProvider(
+                      authProvider.userModel!.photoUrl!)
                   : null,
               child: authProvider.userModel?.photoUrl == null
                   ? Icon(

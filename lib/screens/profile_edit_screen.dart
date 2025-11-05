@@ -158,111 +158,114 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           foregroundColor: Colors.white,
         ),
         body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // プロフィール画像
-              Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.blue[100],
-                      backgroundImage: _selectedImage != null
-                          ? FileImage(_selectedImage!) as ImageProvider
-                          : (userModel?.photoUrl != null
-                              ? CachedNetworkImageProvider(userModel!.photoUrl!) as ImageProvider
-                              : null),
-                      child: (_selectedImage == null && userModel?.photoUrl == null)
-                          ? Icon(
-                              Icons.person,
-                              size: 60,
-                              color: Colors.blue[700],
-                            )
-                          : null,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                          onPressed: _pickImage,
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // プロフィール画像
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.blue[100],
+                        backgroundImage: _selectedImage != null
+                            ? FileImage(_selectedImage!) as ImageProvider
+                            : (userModel?.photoUrl != null
+                                ? CachedNetworkImageProvider(
+                                    userModel!.photoUrl!) as ImageProvider
+                                : null),
+                        child: (_selectedImage == null &&
+                                userModel?.photoUrl == null)
+                            ? Icon(
+                                Icons.person,
+                                size: 60,
+                                color: Colors.blue[700],
+                              )
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.camera_alt,
+                                color: Colors.white, size: 20),
+                            onPressed: _pickImage,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
 
-              // メールアドレス（読み取り専用）
-              TextFormField(
-                initialValue: userModel?.email ?? '',
-                decoration: const InputDecoration(
-                  labelText: 'メールアドレス',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                // メールアドレス（読み取り専用）
+                TextFormField(
+                  initialValue: userModel?.email ?? '',
+                  decoration: const InputDecoration(
+                    labelText: 'メールアドレス',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  enabled: false,
                 ),
-                enabled: false,
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // 表示名
-              TextFormField(
-                controller: _displayNameController,
-                decoration: const InputDecoration(
-                  labelText: '表示名',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
-                  hintText: '表示名を入力してください',
+                // 表示名
+                TextFormField(
+                  controller: _displayNameController,
+                  decoration: const InputDecoration(
+                    labelText: '表示名',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person),
+                    hintText: '表示名を入力してください',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return '表示名を入力してください';
+                    }
+                    if (value.trim().length < 2) {
+                      return '表示名は2文字以上で入力してください';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return '表示名を入力してください';
-                  }
-                  if (value.trim().length < 2) {
-                    return '表示名は2文字以上で入力してください';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
 
-              // 保存ボタン
-              ElevatedButton(
-                onPressed: _isLoading ? null : _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+                // 保存ボタン
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _saveProfile,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          '保存',
+                          style: TextStyle(fontSize: 16),
                         ),
-                      )
-                    : const Text(
-                        '保存',
-                        style: TextStyle(fontSize: 16),
-                      ),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 }
