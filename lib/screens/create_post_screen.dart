@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:exif/exif.dart';
 import '../models/post.dart';
 import '../models/post_category.dart';
 import '../services/firestore_service.dart';
@@ -55,6 +56,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   // 初期位置情報を取得
   Future<void> _initializeLocation() async {
+    // 写真が選択されている場合、まずEXIFから位置情報を取得
+    if (_selectedImage != null) {
+      final exifLocation = await _extractLocationFromImage(_selectedImage!);
+      if (exifLocation != null && mounted) {
+        setState(() {
+          _latitude = exifLocation['latitude'];
+          _longitude = exifLocation['longitude'];
+        });
+        return;
+      }
+    }
+
+    // EXIFに位置情報がない場合、または写真がない場合は現在地を取得
     final position = await _locationService.getCurrentLocation();
     if (position != null && mounted) {
       setState(() {
@@ -62,6 +76,63 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         _longitude = position.longitude;
       });
     }
+  }
+
+  // 画像のEXIFデータから位置情報を抽出
+  Future<Map<String, double>?> _extractLocationFromImage(File imageFile) async {
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final data = await readExifFromBytes(bytes);
+
+      if (data.isEmpty) {
+        return null;
+      }
+
+      // GPS情報を取得
+      final gpsLatitude = data['GPS GPSLatitude'];
+      final gpsLatitudeRef = data['GPS GPSLatitudeRef'];
+      final gpsLongitude = data['GPS GPSLongitude'];
+      final gpsLongitudeRef = data['GPS GPSLongitudeRef'];
+
+      if (gpsLatitude == null || gpsLongitude == null) {
+        return null;
+      }
+
+      // 緯度を計算
+      final latValues = gpsLatitude.values.toList();
+      double latitude = _convertGPSCoordinate(
+        latValues[0].toDouble(),
+        latValues[1].toDouble(),
+        latValues[2].toDouble(),
+      );
+      if (gpsLatitudeRef?.printable == 'S') {
+        latitude = -latitude;
+      }
+
+      // 経度を計算
+      final lonValues = gpsLongitude.values.toList();
+      double longitude = _convertGPSCoordinate(
+        lonValues[0].toDouble(),
+        lonValues[1].toDouble(),
+        lonValues[2].toDouble(),
+      );
+      if (gpsLongitudeRef?.printable == 'W') {
+        longitude = -longitude;
+      }
+
+      return {
+        'latitude': latitude,
+        'longitude': longitude,
+      };
+    } catch (e) {
+      // EXIFデータの読み取りに失敗した場合はnullを返す
+      return null;
+    }
+  }
+
+  // GPS座標を度分秒から10進数に変換
+  double _convertGPSCoordinate(double degrees, double minutes, double seconds) {
+    return degrees + (minutes / 60.0) + (seconds / 3600.0);
   }
 
   // 検索窓のフォーカスリスナーを設定
@@ -130,7 +201,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (image != null) {
       setState(() {
         _selectedImage = File(image.path);
+        _hasLoadedNearbyPlaces = false;
+        _searchResults = [];
       });
+      // 新しい写真のEXIFから位置情報を取得
+      await _initializeLocation();
     }
   }
 
@@ -146,7 +221,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (image != null) {
       setState(() {
         _selectedImage = File(image.path);
+        _hasLoadedNearbyPlaces = false;
+        _searchResults = [];
       });
+      // 新しい写真のEXIFから位置情報を取得
+      await _initializeLocation();
     }
   }
 
