@@ -11,6 +11,7 @@ import '../models/place_search_result.dart';
 import '../services/firestore_service.dart';
 import '../services/location_service.dart';
 import '../services/ad_service.dart';
+import '../services/photo_service.dart';
 import '../providers/auth_provider.dart';
 import 'post_detail_screen.dart';
 import 'create_post_screen.dart';
@@ -27,6 +28,7 @@ class MapScreenState extends State<MapScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   final LocationService _locationService = LocationService();
   final AdService _adService = AdService();
+  final PhotoService _photoService = PhotoService();
 
   GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(35.6812, 139.7671); // 東京駅がデフォルト
@@ -49,6 +51,86 @@ class MapScreenState extends State<MapScreen> {
     _getCurrentLocation();
     _loadPosts();
     _loadBannerAd();
+    _checkRecentPhotos();
+  }
+
+  // 最近の写真をチェック
+  Future<void> _checkRecentPhotos() async {
+    // 少し遅延させてアプリ起動後に表示
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    final recentPhotos = await _photoService.getRecentPhotos(days: 7);
+
+    if (recentPhotos.isNotEmpty && mounted) {
+      _showRecentPhotosDialog(recentPhotos);
+    }
+  }
+
+  // 最近の写真ダイアログを表示
+  void _showRecentPhotosDialog(List<File> photos) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.photo_camera, color: Colors.blue),
+            const SizedBox(width: 8),
+            Text('新しい写真が${photos.length}枚あります'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('思い出を残しませんか？'),
+            const SizedBox(height: 16),
+            // 写真のプレビュー（最大3枚）
+            SizedBox(
+              height: 80,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: photos.length > 3 ? 3 : photos.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        photos[index],
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('後で'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // 最初の写真を選択して投稿画面へ
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CreatePostScreen(
+                    initialImage: photos.first,
+                  ),
+                ),
+              );
+            },
+            child: const Text('投稿する'),
+          ),
+        ],
+      ),
+    );
   }
 
   // バナー広告をロード

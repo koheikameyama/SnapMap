@@ -1,4 +1,4 @@
-package com.mapdiary.map_diary
+package com.mapdiary.app
 
 import io.flutter.embedding.android.FlutterActivity
 

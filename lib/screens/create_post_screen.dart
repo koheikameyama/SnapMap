@@ -287,6 +287,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     final XFile? image = await _imagePicker.pickImage(
       source: ImageSource.camera,
       imageQuality: 85,
+      requestFullMetadata: true, // iOSでEXIF取得を試みる
       // maxWidth/maxHeightを削除してEXIFを保持
     );
 
